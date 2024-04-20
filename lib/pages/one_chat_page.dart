@@ -49,10 +49,11 @@ class _OneChatPageState extends State<OneChatPage> {
   @override
   void initState() {
     super.initState();
-    comment = TextEditingController(
-      text: context.read<RouteFromToCubit>().get().comment ?? '',
-    );
+    comment = TextEditingController();
+
+    // Инициализируем userCubit
     userCubit = context.read<UserCubit>();
+
     controller = ScrollController();
     textController = TextEditingController();
 
@@ -65,12 +66,15 @@ class _OneChatPageState extends State<OneChatPage> {
       print("UPPPDATE");
       var listTmp = querySnapshot.docs.toList();
       if (listTmp.length > 20) {
-        listTmp = querySnapshot.docs.toList().sublist(querySnapshot.docs.toList().length - 20);
+        listTmp = querySnapshot.docs
+            .toList()
+            .sublist(querySnapshot.docs.toList().length - 20);
       }
 
       setState(() {
         list.clear();
-        list.addAll(listTmp.map((doc) => Message.fromJson(doc.data().values.first)));
+        list.addAll(
+            listTmp.map((doc) => Message.fromJson(doc.data().values.first)));
       });
 
       print(list);
@@ -143,11 +147,13 @@ class _OneChatPageState extends State<OneChatPage> {
                       decoration: InputDecoration(
                         hintText: 'Сообщение...',
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 0.5, color: Colors.grey),
+                          borderSide:
+                              BorderSide(width: 0.5, color: Colors.grey),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 0.5, color: Colors.grey),
+                          borderSide:
+                              BorderSide(width: 0.5, color: Colors.grey),
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
@@ -171,7 +177,8 @@ class _OneChatPageState extends State<OneChatPage> {
                           message: Message(
                             date: DateTime.now().millisecondsSinceEpoch,
                             senderId: userCubit.getUser()!.id,
-                            senderName: '${userCubit.getUser()!.fname} ${userCubit.getUser()!.lname}',
+                            senderName:
+                                '${userCubit.getUser()!.fname} ${userCubit.getUser()!.lname}',
                             message: message,
                           ),
                         );
@@ -193,12 +200,12 @@ class _OneChatPageState extends State<OneChatPage> {
                       child: isWaiting
                           ? CircularProgressIndicator()
                           : CircleAvatar(
-                        backgroundColor: Colors.blue,
-                        child: Icon(
-                          Icons.send,
-                          color: Colors.white,
-                        ),
-                      ),
+                              backgroundColor: Colors.blue,
+                              child: Icon(
+                                Icons.send,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   )
               ],
@@ -212,24 +219,30 @@ class _OneChatPageState extends State<OneChatPage> {
 
   Widget _buildMessage(Message message) {
     return Column(
-      crossAxisAlignment: userCubit.getUser()!.id == message.senderId ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: userCubit.getUser()!.id == message.senderId
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Container(
           margin: EdgeInsets.only(left: 10, right: 10),
-          alignment: userCubit.getUser()!.id == message.senderId ? Alignment.topRight : Alignment.topLeft,
+          alignment: userCubit.getUser()!.id == message.senderId
+              ? Alignment.topRight
+              : Alignment.topLeft,
           child: Text(
             DateTime(
-              DateTime.fromMillisecondsSinceEpoch(message.date).year,
-              DateTime.fromMillisecondsSinceEpoch(message.date).month,
-              DateTime.fromMillisecondsSinceEpoch(message.date).day,
-            ) ==
-                DateTime(
-                  DateTime.now().year,
-                  DateTime.now().month,
-                  DateTime.now().day,
-                )
-                ? DateFormat('hh:mm').format(DateTime.fromMillisecondsSinceEpoch(message.date))
-                : DateFormat('hh:mm, dd MMM').format(DateTime.fromMillisecondsSinceEpoch(message.date)),
+                      DateTime.fromMillisecondsSinceEpoch(message.date).year,
+                      DateTime.fromMillisecondsSinceEpoch(message.date).month,
+                      DateTime.fromMillisecondsSinceEpoch(message.date).day,
+                    ) ==
+                    DateTime(
+                      DateTime.now().year,
+                      DateTime.now().month,
+                      DateTime.now().day,
+                    )
+                ? DateFormat('hh:mm')
+                    .format(DateTime.fromMillisecondsSinceEpoch(message.date))
+                : DateFormat('hh:mm, dd MMM')
+                    .format(DateTime.fromMillisecondsSinceEpoch(message.date)),
             style: h12w400BlackWithOpacity,
           ),
         ),
@@ -247,14 +260,21 @@ class _OneChatPageState extends State<OneChatPage> {
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
-                bottomLeft: Radius.circular(userCubit.getUser()!.id == message.senderId ? 25 : 0),
-                bottomRight: Radius.circular(userCubit.getUser()!.id == message.senderId ? 0 : 25),
+                bottomLeft: Radius.circular(
+                    userCubit.getUser()!.id == message.senderId ? 25 : 0),
+                bottomRight: Radius.circular(
+                    userCubit.getUser()!.id == message.senderId ? 0 : 25),
               ),
-              color: userCubit.getUser()!.id == message.senderId ? Colors.blue : Colors.grey.shade200,
+              color: userCubit.getUser()!.id == message.senderId
+                  ? Colors.blue
+                  : Colors.grey.shade200,
             ),
             child: Text(
               message.message,
-              style: h13w500Black.copyWith(color: userCubit.getUser()!.id == message.senderId ? Colors.white : null),
+              style: h13w500Black.copyWith(
+                  color: userCubit.getUser()!.id == message.senderId
+                      ? Colors.white
+                      : null),
             ),
           ),
         ),
@@ -263,10 +283,12 @@ class _OneChatPageState extends State<OneChatPage> {
   }
 }
 
-Future<void> sendNotification(List<String> tokenIdList, String contents, String heading) async {
+Future<void> sendNotification(
+    List<String> tokenIdList, String contents, String heading) async {
   final String kAppId = "adf5890f-356b-4d68-a437-e2e1aea89f6d";
   final String oneSignalUrl = 'https://onesignal.com/api/v1/notifications';
-  final currentUser = userCubit.getUser();
+  final currentUser =
+      userCubit.getUser(); // Используем userCubit для получения пользователя
 
   try {
     var requestBody = jsonEncode(<String, dynamic>{
@@ -279,7 +301,8 @@ Future<void> sendNotification(List<String> tokenIdList, String contents, String 
       "headings": {"en": heading},
       "contents": {"en": contents},
       "id": currentUser?.id, // Добавляем id как часть дополнительных данных
-      "oneId": currentUser?.oneId, // Добавляем oneId как часть дополнительных данных
+      "oneId":
+          currentUser?.oneId, // Добавляем oneId как часть дополнительных данных
     });
 
     print('Request Body: $requestBody');

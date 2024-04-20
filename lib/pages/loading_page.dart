@@ -12,7 +12,7 @@ import 'package:get/route_manager.dart';
 
 import '../bloc/user/user_cubit.dart';
 import '../models/car.dart';
-import '../models/place.dart';
+
 import '../models/role.dart';
 import 'driver_home_page.dart';
 import 'pass_home_page.dart';

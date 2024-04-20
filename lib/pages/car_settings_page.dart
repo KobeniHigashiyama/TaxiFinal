@@ -25,20 +25,27 @@ class _CarSettingsPageState extends State<CarSettingsPage> {
 
   @override
   void initState() {
-    carStatUpdate();
-    comment = TextEditingController(
-        text: context.read<RouteFromToCubit>().get().comment ?? '');
     super.initState();
-
+    // Обновление статистики машины
+    carStatUpdate();
+    // Инициализация таймера
     timer = Timer(Duration(seconds: 2), () {
       setState(() {
         car1 = car;
+      });
+    });
+    // Обеспечение доступа к Cubit после построения виджета
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var routeCubit = context.read<RouteFromToCubit>();
+      setState(() {
+        comment = TextEditingController(text: routeCubit.get().comment ?? '');
       });
     });
   }
 
   @override
   void dispose() {
+    comment.dispose();
     timer?.cancel();
     super.dispose();
   }
@@ -72,64 +79,61 @@ class _CarSettingsPageState extends State<CarSettingsPage> {
             ),
             SizedBox(height: 15),
             MyDivider(),
-
-        Expanded(
-          child: Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                Image.asset(
-                  'asstes/camry.png', // Path to your image asset
-                  scale: 4,
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'asstes/camry.png', // Path to your image asset
+                      scale: 4,
+                    ),
+                    Divider(),
+                    SizedBox(height: 27), // Adjust as needed
+                    GridView.count(
+                      shrinkWrap: true,
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 20.0,
+                      crossAxisSpacing: 20.0,
+                      childAspectRatio: 150 / 90,
+                      children: [
+                        _buildGridItem(
+                          'Зажигание',
+                          Icons.whatshot,
+                          car1.zajiganie,
+                        ),
+                        _buildGridItem(
+                          'Пробег',
+                          Icons.speed,
+                          car1.probeg,
+                        ),
+                        _buildGridItem(
+                          'Температура в салоне',
+                          Icons.thermostat,
+                          car1.temp,
+                        ),
+                        _buildGridItem(
+                          'Уровень топлива',
+                          Icons.local_gas_station,
+                          car1.toplevo,
+                        ),
+                        _buildGridItem(
+                          'Моточасы',
+                          Icons.timer_sharp,
+                          car1.moto,
+                        ),
+                        _buildGridItem(
+                          'Время стоянки',
+                          Icons.timer_sharp,
+                          car1.parkTime,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                Divider(),
-                SizedBox(height: 27), // Adjust as needed
-                 GridView.count(
-                   shrinkWrap: true,
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 20.0,
-                    crossAxisSpacing: 20.0,
-                   childAspectRatio: 150 / 90,
-                    children: [
-                      _buildGridItem(
-                        'Зажигание',
-                        Icons.whatshot,
-                        car1.zajiganie,
-                      ),
-                      _buildGridItem(
-                        'Пробег',
-                        Icons.speed,
-                        car1.probeg,
-                      ),
-                      _buildGridItem(
-                        'Температура в салоне',
-                        Icons.thermostat,
-                        car1.temp,
-                      ),
-                      _buildGridItem(
-                        'Уровень топлива',
-                        Icons.local_gas_station,
-                        car1.toplevo,
-                      ),
-                      _buildGridItem(
-                        'Моточасы',
-                        Icons.timer_sharp,
-                        car1.moto,
-                      ),
-                      _buildGridItem(
-                        'Время стоянки',
-                        Icons.timer_sharp,
-                        car1.parkTime,
-                      ),
-                    ],
-                  ),
-
-              ],
+              ),
             ),
-          ),
-        ),
-
           ],
         ),
       ),
@@ -137,53 +141,48 @@ class _CarSettingsPageState extends State<CarSettingsPage> {
   }
 
   Widget _buildGridItem(String title, IconData iconData, String value) {
-    return  Container(
-        width: 150,
-        height: 90,
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(255, 209, 209, 209).withOpacity(0.5),
-              spreadRadius: 3,
-              blurRadius: 5,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              title,
-              style: h14w400Black,
-              textAlign: TextAlign.center,
-            ),
-            //Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  iconData,
-                  color: blue,
-                  size: 20,
-                ),
-                SizedBox(width: 5),
-                Text(
-                  value,
-                  style: TextStyle(fontSize: 15),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-
+    return Container(
+      width: 150,
+      height: 90,
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(255, 209, 209, 209).withOpacity(0.5),
+            spreadRadius: 3,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: h14w400Black,
+            textAlign: TextAlign.center,
+          ),
+          //Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                iconData,
+                color: blue,
+                size: 20,
+              ),
+              SizedBox(width: 5),
+              Text(
+                value,
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
-
-
-
-
 }

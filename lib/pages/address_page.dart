@@ -26,13 +26,16 @@ class _AddressPageState extends State<AddressPage> {
 
   @override
   void initState() {
-    comment = TextEditingController(
-        text: context.read<RouteFromToCubit>().get().comment ?? '');
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var routeCubit = context.read<RouteFromToCubit>();
+      comment = TextEditingController(text: routeCubit.get().comment ?? '');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var user = context.watch<UserCubit>().getUser();
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -59,32 +62,20 @@ class _AddressPageState extends State<AddressPage> {
             SizedBox(height: 15),
             MyDivider(),
             SizedBox(height: 20),
-
             Container(
               height: MediaQuery.of(context).size.height - 210,
               child: SingleChildScrollView(
                 child: Column(
-                  children: [
-                    context.read<UserCubit>().getUser()?.addressList != null
-                        ? Column(
-                            children: [
-                              ...context
-                                  .watch<UserCubit>()
-                                  .getUser()!
-                                  .addressList!
-                                  .map((e) => AddressContainer(
-                                        el: e,
-                                        change: () => setState(() {}),
-                                      ))
-                                  .toList()
-                            ],
-                          )
-                        : SizedBox(),
-                  ],
+                  children: user?.addressList
+                          ?.map((e) => AddressContainer(
+                                el: e,
+                                change: () => setState(() {}),
+                              ))
+                          .toList() ??
+                      [SizedBox()],
                 ),
               ),
             ),
-
             Expanded(child: SizedBox()),
             Padding(
               padding: const EdgeInsets.all(20.0),
@@ -95,7 +86,6 @@ class _AddressPageState extends State<AddressPage> {
                 child: Button2(title: 'Добавить адрес'),
               ),
             ),
-            //SizedBox(height: 20),
           ],
         ),
       ),
