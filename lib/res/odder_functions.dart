@@ -40,7 +40,6 @@ Future<CarOrder?> orderNow(BuildContext context) async {
   context.read<CarOrderBloc>().currentOrder.passId =
       context.read<CarOrderBloc>().user.getUser()!.id;
 
-
   var order = context.read<CarOrderBloc>().currentOrder;
 
   //проверка занята ли машина в наше время во всех заказах
@@ -51,7 +50,7 @@ Future<CarOrder?> orderNow(BuildContext context) async {
       context.read<CarOrderBloc>().currentOrder.startDate = date;
       context.read<CarOrderBloc>().currentOrder.status = CarOrderStatus.waiting;
     } else {
-      context.read<CarOrderBloc>().currentOrder.status = CarOrderStatus.planed;
+      context.read<CarOrderBloc>().currentOrder.status = CarOrderStatus.planned;
     }
 
     await FirebaseFirestore.instance
@@ -76,7 +75,10 @@ orderConfirm(BuildContext context) async {
           context.read<UserCubit>().getUser()!.lname);
   var order = context.read<RouteFromToCubit>().get();
   order.driverId = context.read<UserCubit>().getUser()!.id;
-  await FirebaseFirestore.instance.collection('orders').doc(id).set(order.toJson());
+  await FirebaseFirestore.instance
+      .collection('orders')
+      .doc(id)
+      .set(order.toJson());
   await sendNotificationToPassStartOrder(orderId: id);
 }
 
@@ -198,7 +200,6 @@ Future<Map<String, dynamic>?> checkOrdersBeforePlane(CarOrder order) async {
 }
 
 Future<void> deleteOrderById(String id) async {
-
   print(id);
   await FirebaseFirestore.instance.collection('orders').doc(id).delete();
 

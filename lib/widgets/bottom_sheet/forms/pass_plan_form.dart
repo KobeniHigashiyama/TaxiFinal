@@ -114,7 +114,7 @@ class _PassPlanFormState extends State<PassPlanForm> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  order.status == CarOrderStatus.planed
+                  order.status == CarOrderStatus.planned
                       ? Container(
                           alignment: Alignment.centerLeft,
                           child: InkWell(
@@ -265,7 +265,7 @@ class _PassPlanFormState extends State<PassPlanForm> {
                                           .read<CarOrderBloc>()
                                           .currentOrder
                                           .startDate ==
-                                      CarOrderStatus.planed ||
+                                      CarOrderStatus.planned ||
                                   order.isCarFree == false
                               ? 'Выберите дату'
                               : 'Сейчас',

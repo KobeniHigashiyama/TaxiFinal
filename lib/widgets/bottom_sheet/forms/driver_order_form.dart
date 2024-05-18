@@ -285,7 +285,7 @@ class _DriverOrderFormState extends State<DriverOrderForm> {
                   if (res == null) {
                     context
                         .read<RouteFromToCubit>()
-                        .setStatus(CarOrderStatus.planed);
+                        .setStatus(CarOrderStatus.planned);
                     context.read<RouteFromToCubit>().setStartDate(planDate!);
                     context.read<RouteFromToCubit>().setEndDate(planDate!.add(
                         Duration(
@@ -312,14 +312,12 @@ class _DriverOrderFormState extends State<DriverOrderForm> {
                     // showBadOrderMessage(context, CarOrder.fromJson(res));
                     print(res);
                   }
-
                 }();
               } else {
                 context
                     .read<RouteFromToCubit>()
                     .setStatus(CarOrderStatus.active);
                 orderConfirm(context);
-
               }
               setState(() {
                 isWaiting = false;

@@ -30,7 +30,7 @@ class CarOrderBloc extends Bloc<CarOrderEvent, CarOrderState> {
     });
     on<CarOrderEventPlanAnother>((event, emit) async {
       tmpOrder = currentOrder;
-      currentOrder = CarOrder(status: CarOrderStatus.planed);
+      currentOrder = CarOrder(status: CarOrderStatus.planned);
       emit(const CarOrderState.planAnother());
     });
 
