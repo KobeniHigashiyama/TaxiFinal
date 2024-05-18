@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/route_manager.dart';
 
 import '../../../bloc/route_from_to/route_from_to.dart';
-import '../../../models/place.dart';
+import 'package:cars/models/place.dart';
 import '../../../res/styles.dart';
 
 class SearchResultsColumn extends StatelessWidget {

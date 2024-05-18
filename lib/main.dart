@@ -26,20 +26,20 @@ void main() async {
 
   HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory());
-  OneSignal.initialize('adf5890f-356b-4d68-a437-e2e1aea89f6d');
-  runApp(const MyApp());
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  OneSignal.initialize('adf5890f-356b-4d68-a437-e2e1aea89f6d');
   OneSignal.Notifications.requestPermission(true);
   OneSignalNotifications().addClickListener(handleOneSignalNotification);
+
+  runApp(const MyApp());
 }
 
-
-
-
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,39 +68,27 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: GetMaterialApp(
+        title: 'Cars App',
+        theme: ThemeData(
+          pageTransitionsTheme: PageTransitionsTheme(builders: {
+            TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          }),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: blue,
+          ),
+          useMaterial3: true,
+        ),
+        supportedLocales: [
+          Locale('en', ''),
+          Locale('ru', ''),
+        ],
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
           DefaultWidgetsLocalizations.delegate,
         ],
-        supportedLocales: [
-          Locale('en', ''),
-          Locale('ru', ''),
-        ],
-        home: MaterialApp(
-          title: 'Cars App',
-          localizationsDelegates: [
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            DefaultWidgetsLocalizations.delegate,
-          ],
-          supportedLocales: [
-            Locale('en', ''),
-            Locale('ru', ''),
-          ],
-          theme: ThemeData(
-            pageTransitionsTheme: PageTransitionsTheme(builders: {
-              TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
-              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            }),
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: blue,
-            ),
-            useMaterial3: true,
-          ),
-
-          home: LoadingPage(),
-        ),
+        home: LoadingPage(),
       ),
     );
   }

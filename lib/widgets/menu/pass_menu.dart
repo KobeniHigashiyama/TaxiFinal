@@ -41,7 +41,7 @@ class PassMenu extends StatelessWidget {
             ListTile(
               onTap: () {
                 Navigator.of(context).pop();
-                Get.to(HistoryPage());
+                Get.to(() => HistoryPage());
               },
               leading: const Icon(Icons.history),
               title: Text('История поездок', style: h14w400Black),
@@ -49,7 +49,7 @@ class PassMenu extends StatelessWidget {
             ListTile(
               onTap: () {
                 Navigator.of(context).pop();
-                Get.to(AddressPage());
+                Get.to(() => AddressPage());
               },
               leading: const Icon(Icons.home_outlined),
               title: Text('Мои адреса', style: h14w400Black),
@@ -65,7 +65,7 @@ class PassMenu extends StatelessWidget {
             ListTile(
               onTap: () {
                 Navigator.of(context).pop();
-                Get.to(CarSettingsPage());
+                Get.to(() => CarSettingsPage());
               },
               leading: const Icon(Icons.settings_outlined),
               title: Text('Состояние машины', style: h14w400Black),

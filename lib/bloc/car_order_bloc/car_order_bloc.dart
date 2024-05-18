@@ -1,5 +1,4 @@
 import 'package:cars/bloc/user/user_cubit.dart';
-import 'package:cars/models/place.dart';
 import 'package:cars/repository/repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

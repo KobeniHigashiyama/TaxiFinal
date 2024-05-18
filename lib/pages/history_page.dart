@@ -23,25 +23,34 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   var comment = TextEditingController();
+  List<CarOrder> orderList = [];
 
   @override
   void initState() {
-    print('init');
-    comment = TextEditingController(
-        text: context.read<RouteFromToCubit>().get().comment ?? '');
-    () async {
-      print(context.read<UserCubit>().getUser()!.id);
-      var tmp = await getHistory(context);
-      if (tmp != null) {
-        setState(() {
-          orderList = tmp;
-        });
-      }
-    }();
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var routeCubit = context.read<RouteFromToCubit>();
+      var userCubit = context.read<UserCubit>();
+      comment = TextEditingController(text: routeCubit.get().comment ?? '');
+      print(userCubit.getUser()!.id);
+      _loadHistory();
+    });
   }
 
-  List<CarOrder> orderList = [];
+  Future<void> _loadHistory() async {
+    var tmp = await getHistory(context);
+    if (tmp != null) {
+      setState(() {
+        orderList = tmp;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    comment.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,10 +88,10 @@ class _HistoryPageState extends State<HistoryPage> {
                     ...orderList.map(
                       (e) => PlaningContainer(
                         isHistory: true,
-                        name:
-                            context.read<UserCubit>().getUser()!.role == Role.driver
-                                ? e.passName ?? ''
-                                : e.driverName ?? '',
+                        name: context.read<UserCubit>().getUser()!.role ==
+                                Role.driver
+                            ? e.passName ?? ''
+                            : e.driverName ?? '',
                         route: [
                           e.from!,
                           ...e.route ?? [],

@@ -30,9 +30,8 @@ import '../widgets/map_container.dart';
 import '../widgets/maps/res/functions.dart';
 import 'package:cars/pages/video_player_page.dart';
 
-
 class PassHomePage extends StatefulWidget {
-  const PassHomePage({super.key});
+  const PassHomePage({Key? key}) : super(key: key);
 
   @override
   State<PassHomePage> createState() => _PassHomePageState();
@@ -41,37 +40,28 @@ class PassHomePage extends StatefulWidget {
 class _PassHomePageState extends State<PassHomePage> {
   @override
   void initState() {
-    // updateCarLocation();
-
     super.initState();
-    // context.read<CarOrderBloc>().add(CarOrderEventInitPassenger());
 
-    if (context.read<CarOrderBloc>().currentOrder.from == null) {
-      Future.delayed(const Duration(seconds: 3), () async {
-        try {
-          var point = await getCurrentPoint();
-          print('----------->');
-          print(point.description);
-          context.read<CarOrderBloc>().currentOrder.from = point;
-          setState(() {
-            order = order = context.read<CarOrderBloc>().currentOrder;
-          });
-        } catch (e) {
-          print(e);
-        }
-      });
-    }
-    if (!(context.read<CarOrderBloc>().state is CarOrderStatePlanAnother)) {
-      // FirebaseFirestore.instance
-      //     .collection('orders')
-      //     .snapshots()
-      //     .listen((querySnapshot) async {
-      //   context.read<CarOrderBloc>().add(CarOrderEventInitPassenger());
-      // });
-      streamSubscription = myStream.listen((querySnapshot) async {
-        context.read<CarOrderBloc>().add(CarOrderEventInitPassenger());
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.read<CarOrderBloc>().currentOrder.from == null) {
+        Future.delayed(const Duration(seconds: 3), () async {
+          try {
+            var point = await getCurrentPoint();
+            context.read<CarOrderBloc>().currentOrder.from = point;
+            setState(() {
+              order = context.read<CarOrderBloc>().currentOrder;
+            });
+          } catch (e) {
+            print(e);
+          }
+        });
+      }
+      if (!(context.read<CarOrderBloc>().state is CarOrderStatePlanAnother)) {
+        streamSubscription = myStream.listen((querySnapshot) {
+          context.read<CarOrderBloc>().add(CarOrderEventInitPassenger());
+        });
+      }
+    });
   }
 
   @override
@@ -81,9 +71,9 @@ class _PassHomePageState extends State<PassHomePage> {
   }
 
   late StreamSubscription<QuerySnapshot<Map<String, dynamic>>>
-  streamSubscription;
+      streamSubscription;
   Stream<QuerySnapshot<Map<String, dynamic>>> myStream =
-  FirebaseFirestore.instance.collection("orders").snapshots();
+      FirebaseFirestore.instance.collection("orders").snapshots();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<ExpandableBottomSheetState> key = GlobalKey();
@@ -94,7 +84,8 @@ class _PassHomePageState extends State<PassHomePage> {
   bool isPerenos = false;
 
   String showDateError = '';
-  CarOrder order = CarOrder(status: CarOrderStatus.empty);
+  late CarOrder order;
+
   @override
   Widget build(BuildContext context) {
     print(context.read<CarOrderBloc>().currentOrder.status);
@@ -102,55 +93,55 @@ class _PassHomePageState extends State<PassHomePage> {
       order = context.read<CarOrderBloc>().currentOrder;
 
     context.watch<CarOrderBloc>().state.when(
-        loading: () {
-          order = context.read<CarOrderBloc>().currentOrder;
-          //  order = context.read<CarOrderBloc>().currentOrder;
-        },
-        error: () {
-          order = context.read<CarOrderBloc>().currentOrder;
-        },
-        active: () => {},
-        confirmed: () {
-          order = context.read<CarOrderBloc>().currentOrder;
-          isWaiting = false;
-          isPerenos = false;
-        },
-        waitingForConfirmation: () async {
-          order = context.read<CarOrderBloc>().currentOrder;
-          isPerenos = false;
-          isWaiting = true;
-        },
-        perenos: () {
-          setState(() {
+          loading: () {
+            order = context.read<CarOrderBloc>().currentOrder;
+          },
+          error: () {
+            order = context.read<CarOrderBloc>().currentOrder;
+          },
+          active: () {},
+          confirmed: () {
             order = context.read<CarOrderBloc>().currentOrder;
             isWaiting = false;
-            isPerenos = true;
-          });
-        },
-        done: () {
-          order = context.read<CarOrderBloc>().currentOrder;
-          isWaiting = false;
-          isPerenos = false;
-          print('ORDER ${order.from}');
-        },
-        finishedOrCanceled: () {
-          Future.delayed(const Duration(seconds: 3), () async {
-            try {
-              var point = await getCurrentPoint();
-              print('----------->');
-              print(point.description);
-              context.read<CarOrderBloc>().currentOrder.from = point;
-              setState(() {
-                order = context.read<CarOrderBloc>().currentOrder;
-              });
-            } catch (e) {
-              print(e);
-            }
-          });
-        },
-        planAnother: () {
-          order = context.read<CarOrderBloc>().currentOrder;
-        });
+            isPerenos = false;
+          },
+          waitingForConfirmation: () async {
+            order = context.read<CarOrderBloc>().currentOrder;
+            isPerenos = false;
+            isWaiting = true;
+          },
+          perenos: () {
+            setState(() {
+              order = context.read<CarOrderBloc>().currentOrder;
+              isWaiting = false;
+              isPerenos = true;
+            });
+          },
+          done: () {
+            order = context.read<CarOrderBloc>().currentOrder;
+            isWaiting = false;
+            isPerenos = false;
+            print('ORDER ${order.from}');
+          },
+          finishedOrCanceled: () {
+            Future.delayed(const Duration(seconds: 3), () async {
+              try {
+                var point = await getCurrentPoint();
+                print('----------->');
+                print(point.description);
+                context.read<CarOrderBloc>().currentOrder.from = point;
+                setState(() {
+                  order = context.read<CarOrderBloc>().currentOrder;
+                });
+              } catch (e) {
+                print(e);
+              }
+            });
+          },
+          planAnother: () {
+            order = context.read<CarOrderBloc>().currentOrder;
+          },
+        );
 
     Future.delayed(
         const Duration(seconds: 0), () => key.currentState!.expand());
@@ -161,7 +152,9 @@ class _PassHomePageState extends State<PassHomePage> {
       floatingActionButton: VideoButton(
         onPressed: () {
           Get.to(() => VideoPlayerPage());
-        }, mapKey: mapKey, mapDriverKey: mapDriverKey,
+        },
+        mapKey: mapKey,
+        mapDriverKey: mapDriverKey,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
       body: ExpandableBottomSheet(
@@ -170,10 +163,10 @@ class _PassHomePageState extends State<PassHomePage> {
         expandableContent: isPerenos && !isWaiting
             ? PassBottomPerenos()
             : isWaiting && !isPerenos
-            ? const PassBottomWaiting()
-            : order.status == CarOrderStatus.active
-            ? PassBottomActive()
-            : PassBottomSheetBody(order: order),
+                ? const PassBottomWaiting()
+                : order.status == CarOrderStatus.active
+                    ? PassBottomActive()
+                    : PassBottomSheetBody(order: order),
         onIsContractedCallback: () {},
         background: Container(
           margin: const EdgeInsets.symmetric(horizontal: 0),
@@ -184,8 +177,8 @@ class _PassHomePageState extends State<PassHomePage> {
                 alignment: Alignment.topCenter,
                 children: [
                   order.from == null ||
-                      order.route == null ||
-                      order.route!.isEmpty
+                          order.route == null ||
+                          order.route!.isEmpty
                       ? MapContainer(key: mapKey, canChangeGeo: false)
                       : DrivingMapPassContainer(key: mapDriverKey),
                   Positioned(
@@ -198,7 +191,7 @@ class _PassHomePageState extends State<PassHomePage> {
                       icon: Icon(
                         Icons.menu,
                         size: 30,
-                        color: Colors.black, // Исправлено: black -> Colors.black
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -206,7 +199,6 @@ class _PassHomePageState extends State<PassHomePage> {
                     top: 50,
                     child: Container(
                       height: 52,
-                      // color: Colors.amber,
                       margin: const EdgeInsets.only(top: 10),
                       width: MediaQuery.of(context).size.width - 100,
                       child: CarStatus(),
@@ -216,7 +208,6 @@ class _PassHomePageState extends State<PassHomePage> {
                     top: 120,
                     child: Container(
                       height: 42,
-                      // color: Colors.amber,
                       margin: const EdgeInsets.only(top: 10),
                       width: MediaQuery.of(context).size.width - 100,
                       child: Text(showDateError),

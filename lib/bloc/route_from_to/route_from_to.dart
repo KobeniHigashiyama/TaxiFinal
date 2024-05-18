@@ -1,9 +1,8 @@
 import 'package:cars/models/car_order.dart';
-import 'package:cars/models/route_from_to.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
-import '../../models/place.dart';
+import 'package:cars/models/place.dart';
 
 class RouteFromToCubit extends Cubit<CarOrder> {
   RouteFromToCubit() : super(CarOrder(status: CarOrderStatus.waiting));
@@ -36,7 +35,7 @@ class RouteFromToCubit extends Cubit<CarOrder> {
     emit(state);
   }
 
-  void setFrom(Place? val) {
+  void setFrom(Place val) {
     state.from = val;
     emit(state);
   }

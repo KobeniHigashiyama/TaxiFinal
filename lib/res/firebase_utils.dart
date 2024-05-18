@@ -54,8 +54,6 @@ Future<List<String>> getUserNameData(
   return list;
 }
 
-
-
 Future<void> saveUserToFireBase({
   required String uid,
   required String fname,
@@ -67,12 +65,12 @@ Future<void> saveUserToFireBase({
 }) async {
   // Получение OneSignal ID
   String? oneId = OneSignal.User.pushSubscription.id;
-  print (oneId);
-  print (oneId);
-  print (oneId);
-  print (oneId);
-  print (oneId);
-  print (oneId);
+  print(oneId);
+  print(oneId);
+  print(oneId);
+  print(oneId);
+  print(oneId);
+  print(oneId);
 
   // Запись OneSignal ID в Firebase
   var docs = await FirebaseFirestore.instance.collection('users');
@@ -205,18 +203,23 @@ Future<Map<String, String>> getCallMap(BuildContext context) async {
 
 Future<Map<String, String>?> getUserList(Role role) async {
   try {
-
     var users = await FirebaseFirestore.instance.collection('users').get();
     Map<String, String> map = {};
     users.docs.forEach((element) {
       var data = element.data();
       if (role == Role.driver) {
         if (data['is_pass'] == true) {
-          map.addAll({'${element.id}': '${data['f_name']} ${data['l_name']} ${data['oneId']}'});
+          map.addAll({
+            '${element.id}':
+                '${data['f_name']} ${data['l_name']} ${data['oneId']}'
+          });
         }
       } else {
         if (data['is_pass'] == false) {
-          map.addAll({'${element.id}': '${data['f_name']} ${data['l_name']} ${data['oneId']}'});
+          map.addAll({
+            '${element.id}':
+                '${data['f_name']} ${data['l_name']} ${data['oneId']}'
+          });
         }
       }
     });

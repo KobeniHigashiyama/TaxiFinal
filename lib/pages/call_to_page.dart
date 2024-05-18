@@ -27,21 +27,27 @@ class CallToPass extends StatefulWidget {
 
 class _CallToPassState extends State<CallToPass> {
   var comment = TextEditingController();
+  Map<String, String> map = {};
 
   @override
   void initState() {
-    comment = TextEditingController(
-        text: context.read<RouteFromToCubit>().get().comment ?? '');
-    () async {
-      var tmp = await getCallMap(context);
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var routeCubit = context.read<RouteFromToCubit>();
+      comment = TextEditingController(text: routeCubit.get().comment ?? '');
+      _loadCallMap();
+    });
+  }
+
+  Future<void> _loadCallMap() async {
+    var tmp = await getCallMap(context);
+    if (tmp != null) {
       setState(() {
         map = tmp;
       });
-    }();
-    super.initState();
+    }
   }
 
-  Map<String, String> map = {};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +56,6 @@ class _CallToPassState extends State<CallToPass> {
           children: [
             Container(
               alignment: Alignment.bottomLeft,
-              //color: Colors.white,
               width: double.infinity,
               padding: EdgeInsets.only(top: 10, left: 10),
               child: Row(
@@ -95,5 +100,11 @@ class _CallToPassState extends State<CallToPass> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    comment.dispose();
+    super.dispose();
   }
 }
